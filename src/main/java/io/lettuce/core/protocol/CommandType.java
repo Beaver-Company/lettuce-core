@@ -81,6 +81,10 @@ public enum CommandType implements ProtocolKeyword {
     // Geo
     GEOADD, GEORADIUS, GEORADIUS_RO, GEORADIUSBYMEMBER, GEORADIUSBYMEMBER_RO, GEOENCODE, GEODECODE, GEOPOS, GEODIST, GEOHASH,
 
+    // Stream
+
+    XADD, XLEN, XRANGE, XREVRANGE, XREAD,
+
     // Others
     TIME, WAIT,
 
