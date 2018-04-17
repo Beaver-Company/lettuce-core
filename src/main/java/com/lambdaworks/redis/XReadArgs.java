@@ -15,8 +15,6 @@
  */
 package com.lambdaworks.redis;
 
-import java.time.Duration;
-
 import com.lambdaworks.redis.internal.LettuceAssert;
 import com.lambdaworks.redis.protocol.CommandArgs;
 import com.lambdaworks.redis.protocol.CommandKeyword;
@@ -30,7 +28,7 @@ public class XReadArgs {
 
     private Long block;
     private Long count;
-    private Group group;
+    private boolean noack;
 
     public static class Builder {
 
@@ -49,8 +47,8 @@ public class XReadArgs {
             return new XReadArgs().count(count);
         }
 
-        public static XReadArgs group(Group group) {
-            return new XReadArgs().group(group);
+        public static XReadArgs noack(boolean noack) {
+            return new XReadArgs().noack(noack);
         }
     }
 
@@ -77,14 +75,13 @@ public class XReadArgs {
     }
 
     /**
-     * Associate a consumer {@link Group} with this read.
+     * Use NOACK option to disable auto-acknowledgement.
      *
-     * @param group the consumer group, must not be {@literal null}.
+     * @param noack {@literal true} to disable auto-ack.
      * @return {@code this}.
      */
-    public XReadArgs group(Group group) {
-        LettuceAssert.notNull(group, "Group must not be null");
-        this.group = group;
+    public XReadArgs noack(boolean noack) {
+        this.noack = noack;
         return this;
     }
 
@@ -98,63 +95,20 @@ public class XReadArgs {
             args.add(CommandKeyword.COUNT).add(count);
         }
 
-        if (group != null) {
-            args.add(CommandKeyword.GROUP).add(group.name).add(group.ttl);
+        if (noack) {
+            args.add(CommandKeyword.NOACK);
         }
     }
 
     /**
      * Value object representing a Stream consumer group.
      */
-    public static class Group {
-
-        final String name;
-        final long ttl;
-
-        private Group(String name, long ttl) {
-            this.name = name;
-            this.ttl = ttl;
-        }
-
-        /**
-         * Create a new consumer group.
-         *
-         * @param name must not be {@literal null} or empty.
-         * @param ttl must not be {@literal null}.
-         * @return the consumer {@link Group} object.
-         */
-        public static Group from(String name, Duration ttl) {
-
-            LettuceAssert.notEmpty(name, "Name must not be empty");
-            LettuceAssert.notNull(ttl, "TTL must not be null");
-
-            return new Group(name, ttl.toMillis());
-        }
-
-        /**
-         * Create a new consumer group.
-         *
-         * @param name must not be {@literal null} or empty.
-         * @param ttlMillis time to live in {@link java.util.concurrent.TimeUnit#MILLISECONDS}.
-         * @return the consumer {@link Group} object.
-         */
-        public static Group from(String name, long ttlMillis) {
-
-            LettuceAssert.notEmpty(name, "Name must not be empty");
-
-            return new Group(name, ttlMillis);
-        }
-    }
-
-    /**
-     * Value object representing a Stream consumer group.
-     */
-    public static class Stream<K> {
+    public static class StreamOffset<K> {
 
         final K name;
         final String offset;
 
-        private Stream(K name, String offset) {
+        private StreamOffset(K name, String offset) {
             this.name = name;
             this.offset = offset;
         }
@@ -163,13 +117,26 @@ public class XReadArgs {
          * Read all new arriving elements from the stream identified by {@code name}.
          *
          * @param name must not be {@literal null}.
-         * @return the {@link Stream} object without a specific offset.
+         * @return the {@link StreamOffset} object without a specific offset.
          */
-        public static <K> Stream<K> from(K name) {
+        public static <K> StreamOffset<K> latest(K name) {
 
             LettuceAssert.notNull(name, "Stream must not be null");
 
-            return new Stream<>(name, "$");
+            return new StreamOffset<>(name, "$");
+        }
+
+        /**
+         * Read all new arriving elements from the stream identified by {@code name}.
+         *
+         * @param name must not be {@literal null}.
+         * @return the {@link StreamOffset} object without a specific offset.
+         */
+        public static <K> StreamOffset<K> latestConsumer(K name) {
+
+            LettuceAssert.notNull(name, "Stream must not be null");
+
+            return new StreamOffset<>(name, ">");
         }
 
         /**
@@ -177,14 +144,14 @@ public class XReadArgs {
          *
          * @param name must not be {@literal null}.
          * @param offset the stream offset.
-         * @return the {@link Stream} object without a specific offset.
+         * @return the {@link StreamOffset} object without a specific offset.
          */
-        public static <K> Stream<K> from(K name, String offset) {
+        public static <K> StreamOffset<K> from(K name, String offset) {
 
             LettuceAssert.notNull(name, "Stream must not be null");
             LettuceAssert.notEmpty(offset, "Offset must not be empty");
 
-            return new Stream<>(name, offset);
+            return new StreamOffset<>(name, offset);
         }
     }
 

@@ -1569,13 +1569,68 @@ public abstract class AbstractRedisReactiveCommands<K, V> implements RedisHashRe
     }
 
     @Override
-    public Observable<StreamMessage<K, V>> xread(XReadArgs.Stream<K>... streams) {
+    public Observable<StreamMessage<K, V>> xread(XReadArgs.StreamOffset<K>... streams) {
         return createDissolvingObservable(() -> commandBuilder.xread(streams, null));
     }
 
     @Override
-    public Observable<StreamMessage<K, V>> xread(XReadArgs args, XReadArgs.Stream<K>... streams) {
+    public Observable<StreamMessage<K, V>> xread(XReadArgs args, XReadArgs.StreamOffset<K>... streams) {
         return createDissolvingObservable(() -> commandBuilder.xread(streams, args));
+    }
+
+    @Override
+    public Observable<Long> xack(K key, String group, String... messageIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds) {
+        return null;
+    }
+
+    @Override
+    public Observable<Boolean> xgroupDelconsumer(K key, Consumer consumer) {
+        return null;
+    }
+
+    @Override
+    public Observable<Boolean> xgroupCreate(K key, String group, String offset) {
+        return null;
+    }
+
+    @Override
+    public Observable<Boolean> xgroupSetid(K key, String group, String offset) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xpending(K key, String group) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xpending(K key, Consumer consumer) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xpending(K key, String group, Range<String> range, Limit limit) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xpending(K key, Consumer consumer, Range<String> range, Limit limit) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs.StreamOffset<K>... streams) {
+        return null;
+    }
+
+    @Override
+    public Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs args, XReadArgs.StreamOffset<K>... streams) {
+        return null;
     }
 
     @Override
