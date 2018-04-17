@@ -1510,13 +1510,69 @@ public abstract class AbstractRedisAsyncCommands<K, V> implements RedisHashAsync
     }
 
     @Override
-    public RedisFuture<List<StreamMessage<K, V>>> xread(XReadArgs.Stream<K>... streams) {
+    public RedisFuture<List<StreamMessage<K, V>>> xread(XReadArgs.StreamOffset<K>... streams) {
         return dispatch(commandBuilder.xread(streams, null));
     }
 
     @Override
-    public RedisFuture<List<StreamMessage<K, V>>> xread(XReadArgs args, XReadArgs.Stream<K>... streams) {
+    public RedisFuture<List<StreamMessage<K, V>>> xread(XReadArgs args, XReadArgs.StreamOffset<K>... streams) {
         return dispatch(commandBuilder.xread(streams, args));
+    }
+
+    @Override
+    public RedisFuture<Long> xack(K key, String group, String... messageIds) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<StreamMessage<K, V>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<String> xgroupCreate(K key, String group, String offset) {
+        return dispatch(commandBuilder.xgroupCreate(key, group, offset));
+    }
+
+    @Override
+    public RedisFuture<String> xgroupDelconsumer(K key, Consumer consumer) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<String> xgroupSetid(K key, String group, String offset) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<List<StreamMessage<K, V>>> xpending(K key, String group) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<List<StreamMessage<K, V>>> xpending(K key, Consumer consumer) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<List<PendingEntry>> xpending(K key, String group, Range<String> range, Limit limit) {
+        return dispatch(commandBuilder.xpending(key, group, range, limit));
+    }
+
+    @Override
+    public RedisFuture<List<StreamMessage<K, V>>> xpending(K key, Consumer consumer, Range<String> range, Limit limit) {
+        return null;
+    }
+
+    @Override
+    public RedisFuture<List<StreamMessage<K, V>>> xreadgroup(Consumer consumer, XReadArgs.StreamOffset<K>... streams) {
+        return dispatch(commandBuilder.xreadgroup(consumer, streams, null));
+    }
+
+    @Override
+    public RedisFuture<List<StreamMessage<K, V>>> xreadgroup(Consumer consumer, XReadArgs args,
+            XReadArgs.StreamOffset<K>... streams) {
+        return dispatch(commandBuilder.xreadgroup(consumer, streams, args));
     }
 
     @Override

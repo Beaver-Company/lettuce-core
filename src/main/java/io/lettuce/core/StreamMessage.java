@@ -54,4 +54,9 @@ public class StreamMessage<K, V> {
     public Map<K, V> getBody() {
         return body;
     }
+
+    @Override
+    public String toString() {
+        return String.format("StreamMessage[%s:%s]%s", stream, id, body);
+    }
 }

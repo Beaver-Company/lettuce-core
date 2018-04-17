@@ -24,7 +24,7 @@ import java.util.*;
 
 import com.lambdaworks.redis.Range.Boundary;
 
-import io.lettuce.core.XReadArgs.Stream;
+import io.lettuce.core.XReadArgs.StreamOffset;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.codec.Utf8StringCodec;
 import io.lettuce.core.internal.LettuceAssert;
@@ -2078,10 +2078,45 @@ class RedisCommandBuilder<K, V> extends BaseRedisCommandBuilder<K, V> {
         return createCommand(XADD, new StatusOutput<>(codec), args);
     }
 
+    public Command<K, V, String> xgroupCreate(K key, String group, String id) {
+        notNullKey(key);
+        LettuceAssert.notEmpty(group, "Group " + MUST_NOT_BE_EMPTY);
+        LettuceAssert.notEmpty(id, "Id " + MUST_NOT_BE_EMPTY);
+
+        CommandArgs<K, V> args = new CommandArgs<>(codec).add(CREATE).addKey(key).add(group).add(id);
+
+        return createCommand(XGROUP, new StatusOutput<>(codec), args);
+    }
+
+    public Command<K, V, Long> xlen(K key) {
+        notNullKey(key);
+
+        CommandArgs<K, V> args = new CommandArgs<>(codec).addKey(key);
+
+        return createCommand(XLEN, new IntegerOutput<>(codec), args);
+    }
+
+    public Command<K, V, List<PendingEntry>> xpending(K key, String group, Range<String> range, Limit limit) {
+        notNullKey(key);
+        LettuceAssert.notNull(range, "Range " + MUST_NOT_BE_NULL);
+        LettuceAssert.notNull(limit, "Limit " + MUST_NOT_BE_NULL);
+        LettuceAssert.notNull(group, "Group " + MUST_NOT_BE_EMPTY);
+
+        CommandArgs<K, V> args = new CommandArgs<>(codec).addKey(key).add(group);
+
+        args.add(getLowerValue(range)).add(getUpperValue(range));
+
+        if (limit.isLimited()) {
+            args.add(limit.getCount());
+        }
+
+        return createCommand(XPENDING, new PendingEntryListOutput<>(codec), args);
+    }
+
     public Command<K, V, List<StreamMessage<K, V>>> xrange(K key, Range<String> range, Limit limit) {
         notNullKey(key);
-        LettuceAssert.notNull(range, "Range  " + MUST_NOT_BE_NULL);
-        LettuceAssert.notNull(limit, "Limit  " + MUST_NOT_BE_NULL);
+        LettuceAssert.notNull(range, "Range " + MUST_NOT_BE_NULL);
+        LettuceAssert.notNull(limit, "Limit " + MUST_NOT_BE_NULL);
 
         CommandArgs<K, V> args = new CommandArgs<>(codec).addKey(key);
 
@@ -2096,8 +2131,8 @@ class RedisCommandBuilder<K, V> extends BaseRedisCommandBuilder<K, V> {
 
     public Command<K, V, List<StreamMessage<K, V>>> xrevrange(K key, Range<String> range, Limit limit) {
         notNullKey(key);
-        LettuceAssert.notNull(range, "Range  " + MUST_NOT_BE_NULL);
-        LettuceAssert.notNull(limit, "Limit  " + MUST_NOT_BE_NULL);
+        LettuceAssert.notNull(range, "Range " + MUST_NOT_BE_NULL);
+        LettuceAssert.notNull(limit, "Limit " + MUST_NOT_BE_NULL);
 
         CommandArgs<K, V> args = new CommandArgs<>(codec).addKey(key);
 
@@ -2128,7 +2163,7 @@ class RedisCommandBuilder<K, V> extends BaseRedisCommandBuilder<K, V> {
         return range.getUpper().getValue();
     }
 
-    public Command<K, V, List<StreamMessage<K, V>>> xread(Stream<K>[] streams, XReadArgs xReadArgs) {
+    public Command<K, V, List<StreamMessage<K, V>>> xread(StreamOffset<K>[] streams, XReadArgs xReadArgs) {
         LettuceAssert.notNull(streams, "Streams " + MUST_NOT_BE_NULL);
         LettuceAssert.isTrue(streams.length > 0, "Streams " + MUST_NOT_BE_EMPTY);
 
@@ -2140,15 +2175,42 @@ class RedisCommandBuilder<K, V> extends BaseRedisCommandBuilder<K, V> {
 
         args.add("STREAMS");
 
-        for (Stream<K> stream : streams) {
+        for (StreamOffset<K> stream : streams) {
             args.addKey(stream.name);
         }
 
-        for (Stream<K> stream : streams) {
+        for (StreamOffset<K> stream : streams) {
             args.add(stream.offset);
         }
 
         return createCommand(XREAD, new StreamReadOutput<>(codec), args);
+    }
+
+    public Command<K, V, List<StreamMessage<K, V>>> xreadgroup(Consumer consumer, XReadArgs.StreamOffset<K>[] streams,
+            XReadArgs xReadArgs) {
+        LettuceAssert.notNull(streams, "Streams " + MUST_NOT_BE_NULL);
+        LettuceAssert.isTrue(streams.length > 0, "Streams " + MUST_NOT_BE_EMPTY);
+        LettuceAssert.notNull(consumer, "Consumer " + MUST_NOT_BE_NULL);
+
+        CommandArgs<K, V> args = new CommandArgs<>(codec);
+
+        args.add("GROUP").add(consumer.group).add(consumer.name);
+
+        if (xReadArgs != null) {
+            xReadArgs.build(args);
+        }
+
+        args.add("STREAMS");
+
+        for (StreamOffset<K> stream : streams) {
+            args.addKey(stream.name);
+        }
+
+        for (XReadArgs.StreamOffset<K> stream : streams) {
+            args.add(stream.offset);
+        }
+
+        return createCommand(XREADGROUP, new StreamReadOutput<>(codec), args);
     }
 
     Command<K, V, Long> zadd(K key, ZAddArgs zAddArgs, double score, V member) {

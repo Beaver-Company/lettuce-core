@@ -15,15 +15,21 @@
  */
 package com.lambdaworks.redis.commands;
 
+import static com.lambdaworks.redis.protocol.CommandType.XINFO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.lettuce.core.StreamMessage;
 import io.lettuce.core.XAddArgs;
-import io.lettuce.core.XReadArgs.Stream;
+import io.lettuce.core.XReadArgs.StreamOffset;
+import com.lambdaworks.redis.codec.StringCodec;
+import com.lambdaworks.redis.output.NestedMultiOutput;
+import com.lambdaworks.redis.protocol.CommandArgs;
 
 /**
  * @author Mark Paluch
@@ -120,8 +126,8 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         String message1 = redis.xadd("stream-1", Collections.singletonMap("key3", "value3"));
         String message2 = redis.xadd("stream-2", Collections.singletonMap("key4", "value4"));
 
-        List<StreamMessage<String, String>> messages = redis.xread(Stream.from("stream-1", initial1),
-                Stream.from("stream-2", initial2));
+        List<StreamMessage<String, String>> messages = redis.xread(StreamOffset.from("stream-1", initial1),
+                StreamOffset.from("stream-2", initial2));
 
         StreamMessage<String, String> firstMessage = messages.get(0);
 
@@ -145,7 +151,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.multi();
         redis.xadd("stream-1", Collections.singletonMap("key3", "value3"));
         redis.xadd("stream-2", Collections.singletonMap("key4", "value4"));
-        redis.xread(Stream.from("stream-1", initial1), Stream.from("stream-2", initial2));
+        redis.xread(StreamOffset.from("stream-1", initial1), XReadArgs.StreamOffset.from("stream-2", initial2));
 
         List<Object> exec = redis.exec();
 
@@ -164,5 +170,70 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         assertThat(secondMessage.getId().equals(message2));
         assertThat(secondMessage.getStream().equals("stream-2"));
         assertThat(secondMessage.getBody()).containsEntry("key4", "value4");
+    }
+
+    @Test
+    public void xgroupCreate() {
+
+        redis.xadd(key, Collections.singletonMap("key", "value"));
+
+        assertThat(redis.xgroupCreate(key, "group", "$")).isEqualTo("OK");
+
+        List<Object> groups = redis.dispatch(XINFO, new NestedMultiOutput<>(StringCodec.UTF8), new CommandArgs<>(
+                StringCodec.UTF8).add("GROUPS").add(key));
+
+        assertThat(groups).isNotEmpty();
+    }
+
+    @Test
+    public void xgroupread() {
+
+        redis.xadd(key, Collections.singletonMap("key", "value"));
+        redis.xgroupCreate(key, "group", "$");
+        redis.xadd(key, Collections.singletonMap("key", "value"));
+
+        List<StreamMessage<String, String>> read1 = redis.xreadgroup(Consumer.from("group", "consumer1"),
+                StreamOffset.latestConsumer(key));
+
+        assertThat(read1).hasSize(1);
+    }
+
+    @Test
+    public void xpending() {
+
+        redis.xadd(key, Collections.singletonMap("key", "value"));
+        redis.xgroupCreate(key, "group", "$");
+        String id = redis.xadd(key, Collections.singletonMap("key", "value"));
+
+        List<StreamMessage<String, String>> read = redis.xreadgroup(Consumer.from("group", "consumer1"),
+                StreamOffset.latestConsumer(key));
+
+        List<PendingEntry> pendingEntries = redis.xpending(key, "group", Range.unbounded(), Limit.from(10));
+
+        assertThat(pendingEntries).hasSize(1);
+
+        PendingEntry pendingEntry = pendingEntries.get(0);
+        assertThat(pendingEntry.getConsumer()).isEqualTo("consumer1");
+        assertThat(pendingEntry.getDeliveryCount()).isEqualTo(1);
+        assertThat(pendingEntry.getMessageId()).isEqualTo(id);
+        assertThat(pendingEntry.getMillisSinceDelivery()).isGreaterThan(0);
+    }
+
+    @Test
+    @Ignore("Not yet implemented in Redis")
+    public void xgroupDelgroup() {
+
+        redis.xadd(key, Collections.singletonMap("key", "value"));
+
+        fail("Not yet implemented in Redis");
+    }
+
+    @Test
+    @Ignore("Not yet implemented in Redis")
+    public void xgroupSetid() {
+
+        redis.xadd(key, Collections.singletonMap("key", "value"));
+
+        fail("Not yet implemented in Redis");
     }
 }

@@ -79,24 +79,28 @@ public enum CommandType implements ProtocolKeyword {
     BITCOUNT, BITFIELD, BITOP, GETBIT, SETBIT, BITPOS,
 
     // Geo
+
     GEOADD, GEORADIUS, GEORADIUS_RO, GEORADIUSBYMEMBER, GEORADIUSBYMEMBER_RO, GEOENCODE, GEODECODE, GEOPOS, GEODIST, GEOHASH,
 
     // Stream
 
-    XADD, XLEN, XRANGE, XREVRANGE, XREAD,
+    XADD, XGROUP, XINFO, XLEN, XPENDING, XRANGE, XREVRANGE, XREAD, XREADGROUP,
 
     // Others
+
     TIME, WAIT,
 
     // SENTINEL
+
     SENTINEL,
 
     // CLUSTER
+
     ASKING, CLUSTER;
 
     public final byte[] bytes;
 
-    private CommandType() {
+    CommandType() {
         bytes = name().getBytes(LettuceCharsets.ASCII);
     }
 
