@@ -1521,11 +1521,11 @@ public abstract class AbstractRedisAsyncCommands<K, V> implements RedisHashAsync
 
     @Override
     public RedisFuture<Long> xack(K key, String group, String... messageIds) {
-        return null;
+        return dispatch(commandBuilder.xack(key, group, messageIds));
     }
 
     @Override
-    public RedisFuture<StreamMessage<K, V>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds) {
+    public RedisFuture<List<StreamMessage<K, V>>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds) {
         return null;
     }
 
@@ -1535,33 +1535,23 @@ public abstract class AbstractRedisAsyncCommands<K, V> implements RedisHashAsync
     }
 
     @Override
-    public RedisFuture<String> xgroupDelconsumer(K key, Consumer consumer) {
+    public RedisFuture<Boolean> xgroupDelconsumer(K key, Consumer consumer) {
         return null;
     }
 
     @Override
-    public RedisFuture<String> xgroupSetid(K key, String group, String offset) {
+    public RedisFuture<Boolean> xgroupSetid(K key, String group, String offset) {
         return null;
     }
 
     @Override
-    public RedisFuture<List<StreamMessage<K, V>>> xpending(K key, String group) {
-        return null;
+    public RedisFuture<List<Object>> xpending(K key, String group) {
+        return dispatch(commandBuilder.xpending(key, group, Range.unbounded(), Limit.unlimited()));
     }
 
     @Override
-    public RedisFuture<List<StreamMessage<K, V>>> xpending(K key, Consumer consumer) {
-        return null;
-    }
-
-    @Override
-    public RedisFuture<List<PendingEntry>> xpending(K key, String group, Range<String> range, Limit limit) {
+    public RedisFuture<List<Object>> xpending(K key, String group, Range<String> range, Limit limit) {
         return dispatch(commandBuilder.xpending(key, group, range, limit));
-    }
-
-    @Override
-    public RedisFuture<List<StreamMessage<K, V>>> xpending(K key, Consumer consumer, Range<String> range, Limit limit) {
-        return null;
     }
 
     @Override

@@ -16,10 +16,11 @@
 package com.lambdaworks.redis.api.rx;
 
 import java.util.Map;
-import com.lambdaworks.redis.*;
-import com.lambdaworks.redis.Consumer;
-import com.lambdaworks.redis.XReadArgs.StreamOffset;
+
 import rx.Observable;
+
+import com.lambdaworks.redis.*;
+import com.lambdaworks.redis.XReadArgs.StreamOffset;
 
 /**
  * Observable commands for Streams.
@@ -99,7 +100,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param offset read offset or {@literal $}.
      * @return simple-reply {@literal true} if successful.
      */
-    Observable<Boolean> xgroupCreate(K key, String group, String offset);
+    Observable<String> xgroupCreate(K key, String group, String offset);
 
     /**
      * Delete a consumer from a consumer group.
@@ -129,22 +130,13 @@ public interface RedisStreamReactiveCommands<K, V> {
     Observable<Long> xlen(K key);
 
     /**
-     * Read pending messages from a stream within a specific {@link Range}.
+     * Read pending messages from a stream for a {@code group}.
      *
      * @param key the stream key.
      * @param group name of the consumer group.
-     * @return StreamMessage array-reply list with members of the resulting stream.
+     * @return Object array-reply list pending entries.
      */
-    Observable<StreamMessage<K, V>> xpending(K key, String group);
-
-    /**
-     * Read pending messages from a stream within a specific {@link Range}.
-     *
-     * @param key the stream key.
-     * @param consumer consumer identified by group name and consumer key.
-     * @return StreamMessage array-reply list with members of the resulting stream.
-     */
-    Observable<StreamMessage<K, V>> xpending(K key, Consumer consumer);
+    Observable<Object> xpending(K key, String group);
 
     /**
      * Read pending messages from a stream within a specific {@link Range}.
@@ -153,20 +145,9 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param group name of the consumer group.
      * @param range must not be {@literal null}.
      * @param limit must not be {@literal null}.
-     * @return StreamMessage array-reply list with members of the resulting stream.
+     * @return Object array-reply list with members of the resulting stream.
      */
-    Observable<StreamMessage<K, V>> xpending(K key, String group, Range<String> range, Limit limit);
-
-    /**
-     * Read pending messages from a stream within a specific {@link Range}.
-     *
-     * @param key the stream key.
-     * @param consumer consumer identified by group name and consumer key.
-     * @param range must not be {@literal null}.
-     * @param limit must not be {@literal null}.
-     * @return StreamMessage array-reply list with members of the resulting stream.
-     */
-    Observable<StreamMessage<K, V>> xpending(K key, Consumer consumer, Range<String> range, Limit limit);
+    Observable<Object> xpending(K key, String group, Range<String> range, Limit limit);
 
     /**
      * Read messages from a stream within a specific {@link Range}.
@@ -215,7 +196,7 @@ public interface RedisStreamReactiveCommands<K, V> {
     Observable<StreamMessage<K, V>> xread(StreamOffset<K>... streams);
 
     /**
-     * Read messages from one or more {@link XReadArgs.StreamOffset}s.
+     * Read messages from one or more {@link StreamOffset}s.
      *
      * @param args read arguments.
      * @param streams the streams to read from.
@@ -224,7 +205,7 @@ public interface RedisStreamReactiveCommands<K, V> {
     Observable<StreamMessage<K, V>> xread(XReadArgs args, StreamOffset<K>... streams);
 
     /**
-     * Read messages from one or more {@link XReadArgs.StreamOffset}s using a consumer group.
+     * Read messages from one or more {@link StreamOffset}s using a consumer group.
      *
      * @param consumer consumer/group.
      * @param streams the streams to read from.
@@ -240,5 +221,5 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param streams the streams to read from.
      * @return StreamMessage array-reply list with members of the resulting stream.
      */
-    Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs args, XReadArgs.StreamOffset<K>... streams);
+    Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs args, StreamOffset<K>... streams);
 }
