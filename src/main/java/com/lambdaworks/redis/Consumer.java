@@ -18,7 +18,10 @@ package com.lambdaworks.redis;
 import com.lambdaworks.redis.internal.LettuceAssert;
 
 /**
- * Value object representing a Stream consumer within a group.
+ * Value object representing a Stream consumer within a consumer group.
+ *
+ * @author Mark Paluch
+ * @since 4.5
  */
 public class Consumer {
 
@@ -43,5 +46,13 @@ public class Consumer {
         LettuceAssert.notEmpty(name, "Name must not be empty");
 
         return new Consumer(group, name);
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public String getName() {
+        return name;
     }
 }

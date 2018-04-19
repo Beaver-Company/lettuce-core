@@ -17,8 +17,8 @@ package com.lambdaworks.redis.cluster.api.sync;
 
 import java.util.List;
 import java.util.Map;
+
 import com.lambdaworks.redis.*;
-import com.lambdaworks.redis.Consumer;
 import com.lambdaworks.redis.XReadArgs.StreamOffset;
 
 /**
@@ -89,7 +89,7 @@ public interface NodeSelectionStreamCommands<K, V> {
      * @param args
      * @return simple-reply the {@link StreamMessage}
      */
-    Executions<StreamMessage<K, V>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds);
+    Executions<List<StreamMessage<K, V>>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds);
 
     /**
      * Create a consumer group.
@@ -99,7 +99,7 @@ public interface NodeSelectionStreamCommands<K, V> {
      * @param offset read offset or {@literal $}.
      * @return simple-reply {@literal true} if successful.
      */
-    Executions<Boolean> xgroupCreate(K key, String group, String offset);
+    Executions<String> xgroupCreate(K key, String group, String offset);
 
     /**
      * Delete a consumer from a consumer group.
@@ -129,22 +129,13 @@ public interface NodeSelectionStreamCommands<K, V> {
     Executions<Long> xlen(K key);
 
     /**
-     * Read pending messages from a stream within a specific {@link Range}.
+     * Read pending messages from a stream for a {@code group}.
      *
      * @param key the stream key.
      * @param group name of the consumer group.
-     * @return List&lt;StreamMessage&gt; array-reply list with members of the resulting stream.
+     * @return List&lt;Object&gt; array-reply list pending entries.
      */
-    Executions<List<StreamMessage<K, V>>> xpending(K key, String group);
-
-    /**
-     * Read pending messages from a stream within a specific {@link Range}.
-     *
-     * @param key the stream key.
-     * @param consumer consumer identified by group name and consumer key.
-     * @return List&lt;StreamMessage&gt; array-reply list with members of the resulting stream.
-     */
-    Executions<List<StreamMessage<K, V>>> xpending(K key, Consumer consumer);
+    Executions<List<Object>> xpending(K key, String group);
 
     /**
      * Read pending messages from a stream within a specific {@link Range}.
@@ -153,20 +144,9 @@ public interface NodeSelectionStreamCommands<K, V> {
      * @param group name of the consumer group.
      * @param range must not be {@literal null}.
      * @param limit must not be {@literal null}.
-     * @return List&lt;StreamMessage&gt; array-reply list with members of the resulting stream.
+     * @return List&lt;Object&gt; array-reply list with members of the resulting stream.
      */
-    Executions<List<StreamMessage<K, V>>> xpending(K key, String group, Range<String> range, Limit limit);
-
-    /**
-     * Read pending messages from a stream within a specific {@link Range}.
-     *
-     * @param key the stream key.
-     * @param consumer consumer identified by group name and consumer key.
-     * @param range must not be {@literal null}.
-     * @param limit must not be {@literal null}.
-     * @return List&lt;StreamMessage&gt; array-reply list with members of the resulting stream.
-     */
-    Executions<List<StreamMessage<K, V>>> xpending(K key, Consumer consumer, Range<String> range, Limit limit);
+    Executions<List<Object>> xpending(K key, String group, Range<String> range, Limit limit);
 
     /**
      * Read messages from a stream within a specific {@link Range}.
@@ -215,13 +195,13 @@ public interface NodeSelectionStreamCommands<K, V> {
     Executions<List<StreamMessage<K, V>>> xread(StreamOffset<K>... streams);
 
     /**
-     * Read messages from one or more {@link XReadArgs.StreamOffset}s.
+     * Read messages from one or more {@link StreamOffset}s.
      *
      * @param args read arguments.
      * @param streams the streams to read from.
      * @return List&lt;StreamMessage&gt; array-reply list with members of the resulting stream.
      */
-    Executions<List<StreamMessage<K, V>>> xread(XReadArgs args, XReadArgs.StreamOffset<K>... streams);
+    Executions<List<StreamMessage<K, V>>> xread(XReadArgs args, StreamOffset<K>... streams);
 
     /**
      * Read messages from one or more {@link StreamOffset}s using a consumer group.
@@ -230,10 +210,10 @@ public interface NodeSelectionStreamCommands<K, V> {
      * @param streams the streams to read from.
      * @return List&lt;StreamMessage&gt; array-reply list with members of the resulting stream.
      */
-    Executions<List<StreamMessage<K, V>>> xreadgroup(Consumer consumer, XReadArgs.StreamOffset<K>... streams);
+    Executions<List<StreamMessage<K, V>>> xreadgroup(Consumer consumer, StreamOffset<K>... streams);
 
     /**
-     * Read messages from one or more {@link XReadArgs.StreamOffset}s using a consumer group.
+     * Read messages from one or more {@link StreamOffset}s using a consumer group.
      *
      * @param consumer consumer/group.
      * @param args read arguments.

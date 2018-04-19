@@ -1580,7 +1580,7 @@ public abstract class AbstractRedisReactiveCommands<K, V> implements RedisHashRe
 
     @Override
     public Observable<Long> xack(K key, String group, String... messageIds) {
-        return null;
+        return createObservable(() -> commandBuilder.xack(key, group, messageIds));
     }
 
     @Override
@@ -1589,12 +1589,12 @@ public abstract class AbstractRedisReactiveCommands<K, V> implements RedisHashRe
     }
 
     @Override
-    public Observable<Boolean> xgroupDelconsumer(K key, Consumer consumer) {
-        return null;
+    public Observable<String> xgroupCreate(K key, String group, String offset) {
+        return createObservable(() -> commandBuilder.xgroupCreate(key, group, offset));
     }
 
     @Override
-    public Observable<Boolean> xgroupCreate(K key, String group, String offset) {
+    public Observable<Boolean> xgroupDelconsumer(K key, Consumer consumer) {
         return null;
     }
 
@@ -1604,33 +1604,23 @@ public abstract class AbstractRedisReactiveCommands<K, V> implements RedisHashRe
     }
 
     @Override
-    public Observable<StreamMessage<K, V>> xpending(K key, String group) {
-        return null;
+    public Observable<Object> xpending(K key, String group) {
+        return createDissolvingObservable(() -> commandBuilder.xpending(key, group, Range.unbounded(), Limit.unlimited()));
     }
 
     @Override
-    public Observable<StreamMessage<K, V>> xpending(K key, Consumer consumer) {
-        return null;
-    }
-
-    @Override
-    public Observable<StreamMessage<K, V>> xpending(K key, String group, Range<String> range, Limit limit) {
-        return null;
-    }
-
-    @Override
-    public Observable<StreamMessage<K, V>> xpending(K key, Consumer consumer, Range<String> range, Limit limit) {
-        return null;
+    public Observable<Object> xpending(K key, String group, Range<String> range, Limit limit) {
+        return createDissolvingObservable(() -> commandBuilder.xpending(key, group, range, limit));
     }
 
     @Override
     public Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs.StreamOffset<K>... streams) {
-        return null;
+        return createDissolvingObservable(() -> commandBuilder.xreadgroup(consumer, streams, null));
     }
 
     @Override
     public Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs args, XReadArgs.StreamOffset<K>... streams) {
-        return null;
+        return createDissolvingObservable(() -> commandBuilder.xreadgroup(consumer, streams, args));
     }
 
     @Override
