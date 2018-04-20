@@ -17,9 +17,10 @@ package com.lambdaworks.redis.api.rx;
 
 import java.util.Map;
 
+import io.lettuce.core.Consumer;
+import io.lettuce.core.XClaimArgs;
 import rx.Observable;
 
-import com.lambdaworks.redis.*;
 import com.lambdaworks.redis.XReadArgs.StreamOffset;
 
 /**

@@ -18,8 +18,9 @@ package com.lambdaworks.redis.api.async;
 import java.util.List;
 import java.util.Map;
 
-import com.lambdaworks.redis.*;
 import com.lambdaworks.redis.XReadArgs.StreamOffset;
+import io.lettuce.core.Consumer;
+import io.lettuce.core.XClaimArgs;
 
 /**
  * Asynchronous executed commands for Streams.

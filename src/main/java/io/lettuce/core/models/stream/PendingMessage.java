@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lambdaworks.redis.models.stream;
+package io.lettuce.core.models.stream;
 
 import java.time.Duration;
 

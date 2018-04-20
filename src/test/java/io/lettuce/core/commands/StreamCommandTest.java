@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lambdaworks.redis.commands;
+package io.lettuce.core.commands;
 
 import static com.lambdaworks.redis.protocol.CommandType.XINFO;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +29,8 @@ import io.lettuce.core.StreamMessage;
 import io.lettuce.core.XAddArgs;
 import io.lettuce.core.XReadArgs.StreamOffset;
 import com.lambdaworks.redis.codec.StringCodec;
-import com.lambdaworks.redis.models.stream.PendingMessage;
-import com.lambdaworks.redis.models.stream.PendingParser;
+import io.lettuce.core.models.stream.PendingMessage;
+import io.lettuce.core.models.stream.PendingParser;
 import com.lambdaworks.redis.output.NestedMultiOutput;
 import com.lambdaworks.redis.protocol.CommandArgs;
 
@@ -229,7 +229,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xadd(key, Collections.singletonMap("key", "value"));
 
         List<StreamMessage<String, String>> read1 = redis.xreadgroup(Consumer.from("group", "consumer1"),
-                StreamOffset.latestConsumer(key));
+                StreamOffset.lastConsumed(key));
 
         assertThat(read1).hasSize(1);
     }
@@ -241,7 +241,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xgroupCreate(key, "group", "$");
         String id = redis.xadd(key, Collections.singletonMap("key", "value"));
 
-        redis.xreadgroup(Consumer.from("group", "consumer1"), StreamOffset.latestConsumer(key));
+        redis.xreadgroup(Consumer.from("group", "consumer1"), StreamOffset.lastConsumed(key));
 
         List<Object> pendingEntries = redis.xpending(key, "group");
         assertThat(pendingEntries).hasSize(4).containsSequence(1L, id, id);
@@ -254,7 +254,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xgroupCreate(key, "group", "$");
         String id = redis.xadd(key, Collections.singletonMap("key", "value"));
 
-        redis.xreadgroup(Consumer.from("group", "consumer1"), StreamOffset.latestConsumer(key));
+        redis.xreadgroup(Consumer.from("group", "consumer1"), StreamOffset.lastConsumed(key));
 
         List<Object> pendingEntries = redis.xpending(key, "group", Range.unbounded(), Limit.from(10));
 
@@ -275,7 +275,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xadd(key, Collections.singletonMap("key", "value"));
 
         List<StreamMessage<String, String>> messages = redis.xreadgroup(Consumer.from("group", "consumer1"),
-                StreamOffset.latestConsumer(key));
+                StreamOffset.lastConsumed(key));
 
         Long ackd = redis.xack(key, "group", messages.get(0).getId());
         assertThat(ackd).isEqualTo(1);
@@ -292,7 +292,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xadd(key, Collections.singletonMap("key", "value"));
 
         List<StreamMessage<String, String>> messages = redis.xreadgroup(Consumer.from("group", "consumer1"),
-                StreamOffset.latestConsumer(key));
+                StreamOffset.lastConsumed(key));
 
         List<StreamMessage<String, String>> claimedMessages = redis.xclaim(key, Consumer.from("group", "consumer2"), 0,
                 messages.get(0).getId());
@@ -311,7 +311,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xadd(key, Collections.singletonMap("key", "value"));
 
         List<StreamMessage<String, String>> messages = redis.xreadgroup(Consumer.from("group", "consumer1"),
-                StreamOffset.latestConsumer(key));
+                StreamOffset.lastConsumed(key));
 
         List<StreamMessage<String, String>> claimedMessages = redis.xclaim(key, Consumer.from("group", "consumer2"),
                 XClaimArgs.Builder.minIdleTime(0).time(Instant.now().minusSeconds(60)), messages.get(0).getId());
@@ -323,7 +323,7 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         List<PendingMessage> pendingMessages = PendingParser.parseRange(xpending);
         PendingMessage message = pendingMessages.get(0);
 
-        assertThat(message.getMsSinceLastDelivery()).isGreaterThan(60000);
+        assertThat(message.getMsSinceLastDelivery()).isBetween(50000L, 80000L);
     }
 
     @Test
