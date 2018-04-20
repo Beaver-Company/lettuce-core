@@ -41,7 +41,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param messageIds message Ids to acknowledge.
      * @return simple-reply the lenght of acknowledged messages.
      */
-    Observable<Long> xack(K key, String group, String... messageIds);
+    Observable<Long> xack(K key, K group, String... messageIds);
 
     /**
      * Append a message to the stream {@code key}.
@@ -90,7 +90,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param args
      * @return simple-reply the {@link StreamMessage}
      */
-    Observable<StreamMessage<K, V>> xclaim(K key, Consumer consumer, XClaimArgs args, String... messageIds);
+    Observable<StreamMessage<K, V>> xclaim(K key, Consumer<K> consumer, XClaimArgs args, String... messageIds);
 
     /**
      * Create a consumer group.
@@ -100,7 +100,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param offset read offset or {@literal $}.
      * @return simple-reply {@literal true} if successful.
      */
-    Observable<String> xgroupCreate(K key, String group, String offset);
+    Observable<String> xgroupCreate(K key, K group, String offset);
 
     /**
      * Delete a consumer from a consumer group.
@@ -109,7 +109,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param consumer consumer identified by group name and consumer key.
      * @return simple-reply the number of pending messages
      */
-    Observable<Boolean> xgroupDelconsumer(K key, Consumer consumer);
+    Observable<Boolean> xgroupDelconsumer(K key, Consumer<K> consumer);
 
     /**
      * Set the current {@code group} id.
@@ -119,7 +119,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param offset read offset or {@literal $}.
      * @return simple-reply the lenght of the stream.
      */
-    Observable<Boolean> xgroupSetid(K key, String group, String offset);
+    Observable<Boolean> xgroupSetid(K key, K group, String offset);
 
     /**
      * Get the length of a steam.
@@ -136,7 +136,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param group name of the consumer group.
      * @return Object array-reply list pending entries.
      */
-    Observable<Object> xpending(K key, String group);
+    Observable<Object> xpending(K key, K group);
 
     /**
      * Read pending messages from a stream within a specific {@link Range}.
@@ -147,7 +147,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param limit must not be {@literal null}.
      * @return Object array-reply list with members of the resulting stream.
      */
-    Observable<Object> xpending(K key, String group, Range<String> range, Limit limit);
+    Observable<Object> xpending(K key, K group, Range<String> range, Limit limit);
 
     /**
      * Read messages from a stream within a specific {@link Range}.
@@ -211,7 +211,7 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param streams the streams to read from.
      * @return StreamMessage array-reply list with members of the resulting stream.
      */
-    Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, StreamOffset<K>... streams);
+    Observable<StreamMessage<K, V>> xreadgroup(Consumer<K> consumer, StreamOffset<K>... streams);
 
     /**
      * Read messages from one or more {@link StreamOffset}s using a consumer group.
@@ -221,5 +221,5 @@ public interface RedisStreamReactiveCommands<K, V> {
      * @param streams the streams to read from.
      * @return StreamMessage array-reply list with members of the resulting stream.
      */
-    Observable<StreamMessage<K, V>> xreadgroup(Consumer consumer, XReadArgs args, StreamOffset<K>... streams);
+    Observable<StreamMessage<K, V>> xreadgroup(Consumer<K> consumer, XReadArgs args, StreamOffset<K>... streams);
 }

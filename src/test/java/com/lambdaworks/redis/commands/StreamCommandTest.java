@@ -134,14 +134,14 @@ public class StreamCommandTest extends AbstractRedisClientTest {
 
         StreamMessage<String, String> firstMessage = messages.get(0);
 
-        assertThat(firstMessage.getId().equals(message1));
-        assertThat(firstMessage.getStream().equals("stream-1"));
+        assertThat(firstMessage.getId()).isEqualTo(message1);
+        assertThat(firstMessage.getStream()).isEqualTo("stream-1");
         assertThat(firstMessage.getBody()).containsEntry("key3", "value3");
 
         StreamMessage<String, String> secondMessage = messages.get(1);
 
-        assertThat(secondMessage.getId().equals(message2));
-        assertThat(secondMessage.getStream().equals("stream-2"));
+        assertThat(secondMessage.getId()).isEqualTo(message2);
+        assertThat(secondMessage.getStream()).isEqualTo("stream-2");
         assertThat(secondMessage.getBody()).containsEntry("key4", "value4");
     }
 
@@ -164,14 +164,14 @@ public class StreamCommandTest extends AbstractRedisClientTest {
 
         StreamMessage<String, String> firstMessage = messages.get(0);
 
-        assertThat(firstMessage.getId().equals(message1));
-        assertThat(firstMessage.getStream().equals("stream-1"));
+        assertThat(firstMessage.getId()).isEqualTo(message1);
+        assertThat(firstMessage.getStream()).isEqualTo("stream-1");
         assertThat(firstMessage.getBody()).containsEntry("key3", "value3");
 
         StreamMessage<String, String> secondMessage = messages.get(1);
 
-        assertThat(secondMessage.getId().equals(message2));
-        assertThat(secondMessage.getStream().equals("stream-2"));
+        assertThat(secondMessage.getId()).isEqualTo(message2);
+        assertThat(secondMessage.getStream()).isEqualTo("stream-2");
         assertThat(secondMessage.getBody()).containsEntry("key4", "value4");
     }
 
