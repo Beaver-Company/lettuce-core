@@ -21,7 +21,7 @@ import java.time.Duration;
  * Value object representing a pending message reported through XPENDING with range/limit.
  *
  * @author Mark Paluch
- * @since 4.5
+ * @since 5.1
  */
 public class PendingMessage {
 
