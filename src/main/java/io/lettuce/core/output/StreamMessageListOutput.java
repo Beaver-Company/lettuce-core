@@ -21,15 +21,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lambdaworks.redis.StreamMessage;
-import com.lambdaworks.redis.codec.RedisCodec;
-import com.lambdaworks.redis.internal.LettuceAssert;
+import io.lettuce.core.StreamMessage;
+import io.lettuce.core.codec.RedisCodec;
+import io.lettuce.core.internal.LettuceAssert;
 
 /**
  * {@link List} of {@link StreamMessage}s.
  *
  * @author Mark Paluch
- * @since 4.5
+ * @since 5.1
  */
 public class StreamMessageListOutput<K, V> extends CommandOutput<K, V, List<StreamMessage<K, V>>> implements
         StreamingOutput<StreamMessage<K, V>> {

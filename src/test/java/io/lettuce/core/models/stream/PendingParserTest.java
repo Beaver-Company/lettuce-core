@@ -22,12 +22,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import io.lettuce.core.models.stream.PendingMessage;
-import io.lettuce.core.models.stream.PendingMessages;
-import io.lettuce.core.models.stream.PendingParser;
 import org.junit.Test;
 
-import com.lambdaworks.redis.Range;
+import io.lettuce.core.Range;
 
 /**
  * @author Mark Paluch

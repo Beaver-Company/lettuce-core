@@ -15,7 +15,7 @@
  */
 package io.lettuce.core.commands;
 
-import static com.lambdaworks.redis.protocol.CommandType.XINFO;
+import static io.lettuce.core.protocol.CommandType.XINFO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
@@ -25,14 +25,13 @@ import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import io.lettuce.core.StreamMessage;
-import io.lettuce.core.XAddArgs;
+import io.lettuce.core.*;
 import io.lettuce.core.XReadArgs.StreamOffset;
-import com.lambdaworks.redis.codec.StringCodec;
+import io.lettuce.core.codec.StringCodec;
 import io.lettuce.core.models.stream.PendingMessage;
 import io.lettuce.core.models.stream.PendingParser;
-import com.lambdaworks.redis.output.NestedMultiOutput;
-import com.lambdaworks.redis.protocol.CommandArgs;
+import io.lettuce.core.output.NestedMultiOutput;
+import io.lettuce.core.protocol.CommandArgs;
 
 /**
  * @author Mark Paluch
@@ -189,11 +188,11 @@ public class StreamCommandTest extends AbstractRedisClientTest {
         redis.xadd("stream-2", Collections.singletonMap("key4", "value4"));
         redis.xread(StreamOffset.from("stream-1", initial1), XReadArgs.StreamOffset.from("stream-2", initial2));
 
-        List<Object> exec = redis.exec();
+        TransactionResult exec = redis.exec();
 
-        String message1 = (String) exec.get(0);
-        String message2 = (String) exec.get(1);
-        List<StreamMessage<String, String>> messages = (List) exec.get(2);
+        String message1 = exec.get(0);
+        String message2 = exec.get(1);
+        List<StreamMessage<String, String>> messages = exec.get(2);
 
         StreamMessage<String, String> firstMessage = messages.get(0);
 

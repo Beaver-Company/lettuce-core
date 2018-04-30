@@ -17,7 +17,7 @@ package io.lettuce.core.models.stream;
 
 import java.util.Map;
 
-import com.lambdaworks.redis.Range;
+import io.lettuce.core.Range;
 
 /**
  * @author Mark Paluch

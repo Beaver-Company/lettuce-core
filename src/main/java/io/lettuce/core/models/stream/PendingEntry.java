@@ -19,7 +19,7 @@ package io.lettuce.core.models.stream;
  * Value object representing an entry of the Pending Entry List retrieved via {@literal XPENDING}.
  *
  * @author Mark Paluch
- * @since 4.5
+ * @since 5.1
  */
 public class PendingEntry {
 

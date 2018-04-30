@@ -31,7 +31,7 @@ public interface RedisAsyncCommands<K, V> extends RedisHashAsyncCommands<K, V>, 
         RedisStringAsyncCommands<K, V>, RedisListAsyncCommands<K, V>, RedisSetAsyncCommands<K, V>,
         RedisSortedSetAsyncCommands<K, V>, RedisScriptingAsyncCommands<K, V>, RedisServerAsyncCommands<K, V>,
         RedisHLLAsyncCommands<K, V>, BaseRedisAsyncCommands<K, V>, RedisClusterAsyncCommands<K, V>,
-        RedisTransactionalAsyncCommands<K, V>, RedisGeoAsyncCommands<K, V> {
+        RedisTransactionalAsyncCommands<K, V>, RedisGeoAsyncCommands<K, V>, RedisStreamAsyncCommands<K, V> {
 
     /**
      * Authenticate to the server.

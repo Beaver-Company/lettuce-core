@@ -31,7 +31,7 @@ public interface RedisReactiveCommands<K, V> extends RedisHashReactiveCommands<K
         RedisStringReactiveCommands<K, V>, RedisListReactiveCommands<K, V>, RedisSetReactiveCommands<K, V>,
         RedisSortedSetReactiveCommands<K, V>, RedisScriptingReactiveCommands<K, V>, RedisServerReactiveCommands<K, V>,
         RedisHLLReactiveCommands<K, V>, BaseRedisReactiveCommands<K, V>, RedisClusterReactiveCommands<K, V>,
-        RedisTransactionalReactiveCommands<K, V>, RedisGeoReactiveCommands<K, V> {
+        RedisTransactionalReactiveCommands<K, V>, RedisGeoReactiveCommands<K, V>, RedisStreamReactiveCommands<K, V> {
 
     /**
      * Authenticate to the server.

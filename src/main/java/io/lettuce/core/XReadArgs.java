@@ -17,9 +17,9 @@ package io.lettuce.core;
 
 import java.time.Duration;
 
-import com.lambdaworks.redis.internal.LettuceAssert;
-import com.lambdaworks.redis.protocol.CommandArgs;
-import com.lambdaworks.redis.protocol.CommandKeyword;
+import io.lettuce.core.internal.LettuceAssert;
+import io.lettuce.core.protocol.CommandArgs;
+import io.lettuce.core.protocol.CommandKeyword;
 
 /**
  * Argument list builder for the Redis <a href="http://redis.io/commands/xread">XREAD</a> and {@literal XREADGROUP} commands.
@@ -28,7 +28,7 @@ import com.lambdaworks.redis.protocol.CommandKeyword;
  * {@link XReadArgs} is a mutable object and instances should be used only once to avoid shared mutable state.
  *
  * @author Mark Paluch
- * @since 4.5
+ * @since 5.1
  */
 public class XReadArgs {
 

@@ -30,7 +30,7 @@ import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
 public interface RedisCommands<K, V> extends RedisHashCommands<K, V>, RedisKeyCommands<K, V>, RedisStringCommands<K, V>,
         RedisListCommands<K, V>, RedisSetCommands<K, V>, RedisSortedSetCommands<K, V>, RedisScriptingCommands<K, V>,
         RedisServerCommands<K, V>, RedisHLLCommands<K, V>, BaseRedisCommands<K, V>, RedisClusterCommands<K, V>,
-        RedisTransactionalCommands<K, V>, RedisGeoCommands<K, V> {
+        RedisTransactionalCommands<K, V>, RedisStreamCommands<K, V>, RedisGeoCommands<K, V> {
 
     /**
      * Authenticate to the server.
